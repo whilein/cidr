@@ -16,6 +16,19 @@ public final class InetRange {
         return "InetRange{" + start.getHostAddress() + " -> " + end.getHostAddress() + "}";
     }
 
+    @Override
+    public int hashCode() {
+        return 1 + (31 + start.hashCode()) * 31 + end.hashCode();
+    }
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof InetRange)) return false;
+
+        InetRange that = (InetRange) obj;
+        return start.equals(that.start) && end.equals(that.end);
+    }
+
     public InetAddress getStart() {
         return start;
     }

@@ -24,6 +24,25 @@ public final class Cidr4 implements Cidr {
         this.maskBits = maskBits;
     }
 
+    @Override
+    public String toString() {
+        return "Cidr4{" + toNotation() + "}";
+    }
+
+    @Override
+    public int hashCode() {
+        return 1 + (31 + address) * 31 + mask;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof Cidr4)) return false;
+
+        Cidr4 that = (Cidr4) obj;
+        return address == that.address && mask == that.mask;
+    }
+
     public static Cidr create(final InetAddress address, final int maskBits) {
         if (!(address instanceof Inet4Address)) {
             throw new IllegalArgumentException("Provided argument is not ipv4 address");
@@ -66,6 +85,15 @@ public final class Cidr4 implements Cidr {
     @Override
     public int getMaskBits() {
         return maskBits;
+    }
+
+    @Override
+    public String toNotation() {
+        return String.valueOf((address >> 24) & 0xFF) +
+                '.' + ((address >> 16) & 0xFF) +
+                '.' + ((address >> 8) & 0xFF) +
+                '.' + (address & 0xFF) +
+                '/' + maskBits;
     }
 
     @Override

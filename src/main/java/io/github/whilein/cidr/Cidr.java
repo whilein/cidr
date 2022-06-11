@@ -6,6 +6,8 @@ public interface Cidr {
 
     int getMaskBits();
 
+    String toNotation();
+
     InetRange toRange();
 
     boolean contains(int address);

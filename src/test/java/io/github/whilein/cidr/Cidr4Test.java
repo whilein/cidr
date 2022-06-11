@@ -30,6 +30,12 @@ class Cidr4Test {
     }
 
     @Test
+    void toNotation() {
+        Cidr cidr = Cidr4.from("192.168.0.0/16");
+        assertEquals("192.168.0.0/16", cidr.toNotation());
+    }
+
+    @Test
     void testRange() {
         InetRange range = Cidr4.from("192.168.0.0/16").toRange();
         assertEquals(inet("192.168.0.0"), range.getStart());
