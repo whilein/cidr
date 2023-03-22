@@ -1,5 +1,7 @@
 package io.github.whilein.cidr;
 
+import lombok.experimental.UtilityClass;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -7,9 +9,10 @@ import java.lang.reflect.Field;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 
+@UtilityClass
 public final class Inet {
 
-    private static final MethodHandle INET_ADDRESS__INIT;
+    private final MethodHandle INET_ADDRESS__INIT;
 
     static {
         MethodHandle inetAddressInit;
@@ -28,7 +31,7 @@ public final class Inet {
         INET_ADDRESS__INIT = inetAddressInit;
     }
 
-    public static InetAddress v4(final int address) {
+    public InetAddress v4(final int address) {
         try {
             if (INET_ADDRESS__INIT == null) {
                 final byte[] bytes = new byte[4];

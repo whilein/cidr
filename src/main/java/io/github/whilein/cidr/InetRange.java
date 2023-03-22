@@ -1,15 +1,22 @@
 package io.github.whilein.cidr;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
+import lombok.experimental.FieldDefaults;
+
 import java.net.InetAddress;
 
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 public final class InetRange {
 
-    private final InetAddress start, end;
+    InetAddress start, end;
 
-    public InetRange(final InetAddress start, final InetAddress end) {
-        this.start = start;
-        this.end = end;
-    }
+    @Accessors(fluent = true)
+    long size;
 
     @Override
     public String toString() {
@@ -20,6 +27,7 @@ public final class InetRange {
     public int hashCode() {
         return 1 + (31 + start.hashCode()) * 31 + end.hashCode();
     }
+
     @Override
     public boolean equals(final Object obj) {
         if (obj == this) return true;
@@ -29,11 +37,4 @@ public final class InetRange {
         return start.equals(that.start) && end.equals(that.end);
     }
 
-    public InetAddress getStart() {
-        return start;
-    }
-
-    public InetAddress getEnd() {
-        return end;
-    }
 }

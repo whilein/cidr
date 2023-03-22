@@ -10,6 +10,8 @@ public interface Cidr {
 
     InetRange toRange();
 
+    long size();
+
     boolean contains(int address);
 
     boolean contains(InetAddress address);

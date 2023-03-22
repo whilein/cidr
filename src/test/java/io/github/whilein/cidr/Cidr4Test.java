@@ -36,6 +36,18 @@ class Cidr4Test {
     }
 
     @Test
+    void testCount1() {
+        Cidr cidr = Cidr4.from("127.0.0.1/32");
+        assertEquals(1, cidr.size());
+    }
+
+    @Test
+    void testCount256() {
+        Cidr cidr = Cidr4.from("127.0.0.1/24");
+        assertEquals(256, cidr.size());
+    }
+
+    @Test
     void testRange() {
         InetRange range = Cidr4.from("192.168.0.0/16").toRange();
         assertEquals(inet("192.168.0.0"), range.getStart());

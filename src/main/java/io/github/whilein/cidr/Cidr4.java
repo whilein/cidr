@@ -1,8 +1,14 @@
 package io.github.whilein.cidr;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
 
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Cidr4 implements Cidr {
 
     public static boolean contains(final int address, final int subject, final int mask) {
@@ -13,16 +19,10 @@ public final class Cidr4 implements Cidr {
         return -(1 << (32 - maskBits));
     }
 
-    private final int address;
+    int address;
 
-    private final int mask;
-    private final int maskBits;
-
-    private Cidr4(final int address, final int mask, final int maskBits) {
-        this.address = address;
-        this.mask = mask;
-        this.maskBits = maskBits;
-    }
+    int mask;
+    int maskBits;
 
     @Override
     public String toString() {
@@ -100,8 +100,14 @@ public final class Cidr4 implements Cidr {
     public InetRange toRange() {
         return new InetRange(
                 Inet.v4(address & mask),
-                Inet.v4(address | ~mask)
+                Inet.v4(address | ~mask),
+                size()
         );
+    }
+
+    @Override
+    public long size() {
+        return 1L << (32 - maskBits);
     }
 
     @Override
