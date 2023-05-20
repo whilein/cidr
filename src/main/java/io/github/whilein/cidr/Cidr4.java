@@ -1,6 +1,7 @@
 package io.github.whilein.cidr;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
@@ -10,6 +11,9 @@ import java.net.InetAddress;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Cidr4 implements Cidr {
+
+    private static final int FULL_BITS = 32;
+    private static final int FULL_BIT_MASK = mask(FULL_BITS);
 
     public static boolean contains(final int address, final int subject, final int mask) {
         return (address & mask) == (subject & mask);
@@ -22,6 +26,8 @@ public final class Cidr4 implements Cidr {
     int address;
 
     int mask;
+
+    @Getter
     int maskBits;
 
     @Override
@@ -55,36 +61,67 @@ public final class Cidr4 implements Cidr {
         return new Cidr4(address, mask(maskBits), maskBits);
     }
 
-    public static Cidr from(final String notation) {
+    private static final int MIN_LENGTH = 7; // 0.0.0.0
+
+    public static Cidr from(final String notation) throws BadCidr4FormatException {
         int address = 0;
         int num = 0;
+        int count = 0;
 
         for (int i = 0, j = notation.length(); i < j; i++) {
             final char ch = notation.charAt(i);
 
             if (ch == '.') {
+                if (count >= 3 || isInvalidPart(num)) {
+                    throw badCidrFormat(notation);
+                }
+
                 address = (address | -num) << 8;
                 num = 0;
+                count++;
                 continue;
-            }
+            } else if (ch == '/') {
+                if (count != 3 || isInvalidPart(num)) {
+                    throw badCidrFormat(notation);
+                }
 
-            if (ch == '/') {
                 address |= -num;
                 num = 0;
+                count++;
                 continue;
+            } else if (ch > '9' || ch < '0') {
+                throw badCidrFormat(notation);
             }
 
             num *= 10;
             num -= (ch - '0');
         }
 
-        final int maskBits;
-        return new Cidr4(address, mask(maskBits = -num), maskBits);
+        switch (count) {
+            case 3:
+                if (isInvalidPart(num)) {
+                    throw badCidrFormat(notation);
+                }
+
+                return new Cidr4(address | -num, FULL_BIT_MASK, FULL_BITS);
+            case 4:
+                if (num == 0) {
+                    throw badCidrFormat(notation);
+                }
+
+                final int maskBits;
+                return new Cidr4(address, mask(maskBits = -num), maskBits);
+            default:
+                throw badCidrFormat(notation);
+        }
     }
 
-    @Override
-    public int getMaskBits() {
-        return maskBits;
+    private static boolean isInvalidPart(int n) {
+        return n <= -256 || n > 0;
+    }
+
+    private static RuntimeException badCidrFormat(String notation) {
+        throw new BadCidr4FormatException("Bad cidr format: " + notation);
     }
 
     @Override
