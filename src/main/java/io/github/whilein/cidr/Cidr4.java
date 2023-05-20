@@ -61,8 +61,6 @@ public final class Cidr4 implements Cidr {
         return new Cidr4(address, mask(maskBits), maskBits);
     }
 
-    private static final int MIN_LENGTH = 7; // 0.0.0.0
-
     public static Cidr from(final String notation) throws BadCidr4FormatException {
         int address = 0;
         int num = 0;
